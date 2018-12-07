@@ -11,20 +11,27 @@ import UIKit
 class ViewController: UIViewController {
     
     var rgb = [Float]()
-    var difficulty: Float = 30
+    var difficulty: Float?
+    var totalScore: Int = 0
 
     @IBOutlet weak var firstImageView: UIImageView!
     @IBOutlet weak var secondImageView: UIImageView!
-    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var totalScoreLabel: UILabel!
+    @IBOutlet weak var switableTextLabel: UILabel!
     @IBOutlet weak var difficultyControl: UISegmentedControl!
     @IBOutlet weak var rSlider: UISlider!
     @IBOutlet weak var gSlider: UISlider!
     @IBOutlet weak var bSlider: UISlider!
+    @IBOutlet weak var confirmButton: UIButton!
     
     @IBAction func changeColor(_ sender: Any) {
         let red = rSlider.value
         let green = gSlider.value
         let blue = bSlider.value
+        print("Red: \(red)")
+        print("Green: \(green)")
+        print("Blue: \(blue)")
+        print("Result: \(rgb)")
         firstImageView.backgroundColor = UIColor(red: CGFloat(red/255), green: CGFloat(green/255), blue: CGFloat(blue/255), alpha: CGFloat(1))
     }
     
@@ -39,6 +46,8 @@ class ViewController: UIViewController {
         default:
             break;
         }
+        difficultySelected()
+        startNewGame()
     }
     
     @IBAction func checkButton(_ sender: Any) {
@@ -47,15 +56,28 @@ class ViewController: UIViewController {
             if checks[index] < 0 {
                 checks[index] = checks[index] * -1
             }
+            totalScore = totalScore + Int(checks[index])
         }
         
         for check in checks {
+            guard let difficulty = difficulty else {
+                return
+            }
             if check > difficulty {
-                statusLabel.text = "Você Perdeu"
+                switableTextLabel.text = "Você Perdeu"
             } else {
-                statusLabel.text = "Você Ganhou"
+                switableTextLabel.isHidden = false
+                switableTextLabel.text = "Você ganhou \(totalScore) pontos"
+                totalScoreLabel.text = "Total Score: \(totalScore)"
             }
         }
+    }
+    
+    func difficultySelected() {
+        difficultyControl.isEnabled = false
+        totalScoreLabel.isHidden = false
+        switableTextLabel.isHidden = true
+        confirmButton.isEnabled = true
     }
     
     func generateNewColor(){
@@ -71,7 +93,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        startNewGame()
     }
 }
 
